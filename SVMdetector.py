@@ -1,3 +1,6 @@
+'''
+    --> Use SVM classifier to match the detected sign to a sign from the database
+'''
 import cv2 as cv
 import numpy as np
 import os
@@ -156,14 +159,10 @@ def Load():
 
 ###################################################################################################
 
-# nm = os.getcwd() + "/96.joblib.pkl"
-# clf = joblib.load(nm)
-'''
+if (__name__ == "main")
+    Load()
 
-Load()
+    im = cv.imread('41.jpg')
+    gim = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
 
-im = cv.imread('41.jpg')
-gim = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
-
-SVMClassifier(gim, 1)
-'''
+    SVMClassifier(gim, 1)

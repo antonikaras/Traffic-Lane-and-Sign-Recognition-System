@@ -192,15 +192,8 @@ def Processing(src):
 
     thr, thr_s = threshold(blur, thr, 255, THRESH_TOZERO)
 
-
-
-
     # Apply canny edge detection
-           
     cnny = Canny(otsu, thr, 3 * thr)
-
-    #imshow("thr", canny)
-    #waitKey()
 
     for j in range(0, 2):
         for i in range(0, 9):
@@ -224,16 +217,13 @@ def Processing(src):
                 lines = HoughLinesP(b_gsrc, 1, np.pi / 180, 22, 20, 8)
 
                 if lines is not None:
-                    # print(len(lines))
                     for L in range(0, len(lines)):
                         for x1, y1, x2, y2 in lines[L]:
                             p1 = (x1, y1)
                             p2 = (x2, y2)
 
                             length = distance.euclidean(p1, p2 )
-                            #print(x1 + xs + x, y1 + ys + y, length)
                             if x1 != x2 and length > 5:
-                                #print("----> ", x1 + xs + x, y1 + ys + y, length)
                                 a = (y1 - y2) / (x1 - x2)
                                 th = atan(a) * 180 / np.pi
 
@@ -244,19 +234,16 @@ def Processing(src):
                                         lly.append(y1 + ys + y)
                                         lly.append(y2 + ys + y)
                                     if mi1:
-                                        #print(x1, xs, x, x1 + xs + x)
                                         m1lx.append(x1 + xs + x)
                                         m1lx.append(x2 + xs + x)
                                         m1ly.append(y1 + ys + y)
                                         m1ly.append(y2 + ys + y)
                                     if mi2:
-                                        #print(x1, xs, x, x1 + xs + x)
                                         m2lx.append(x1 + xs + x)
                                         m2lx.append(x2 + xs + x)
                                         m2ly.append(y1 + ys + y)
                                         m2ly.append(y2 + ys + y)
                                     if mi3:
-                                        #print(x1, xs, x, x1 + xs + x)
                                         m3lx.append(x1 + xs + x)
                                         m3lx.append(x2 + xs + x)
                                         m3ly.append(y1 + ys + y)
@@ -266,8 +253,6 @@ def Processing(src):
                                     rlx.append(x2 + xs + x)
                                     rly.append(y1 + ys + y)
                                     rly.append(y2 + ys + y)
-
-                            #line(src, (x1 + xs + x, y1 + ys + y), (x2 + xs + x, y2 + ys + y), (0, 0, 255), 2)
 
     l1 = -1
     l2 = -1
@@ -318,80 +303,77 @@ def Processing(src):
 def DrawLanes(src, llx, lly, mlx, mly, rlx, rly):
 
     c = FindCurve(llx, lly, 0)
-    #if c is not None:
-    #    print("l", c)
+
     DrawCurve(src, c)
     c = FindCurve(mlx, mly, 0)
-    #if c is not None:
-    #    print("m", c)
+
     DrawCurve(src, c)
     c = FindCurve(rlx, rly, 1)
-    #if c is not None:
-    #    print("r", c)
+
     DrawCurve(src, c)
 
     return src
 
 #--------------------------------------------------------------------------------------------------
 
-'''
-#cap = cv2.VideoCapture('19190014.AVI')
-#cap = cv2.VideoCapture('18590010.AVI')
-#cap = cv2.VideoCapture('18180002.AVI')
-#cap = cv2.VideoCapture('Trip_02.mp4')
-cap = VideoCapture('01200003.AVI')
+if (__name__ == 'main'):
+
+    #cap = cv2.VideoCapture('19190014.AVI')
+    #cap = cv2.VideoCapture('18590010.AVI')
+    #cap = cv2.VideoCapture('18180002.AVI')
+    #cap = cv2.VideoCapture('Trip_02.mp4')
+    cap = VideoCapture('01200003.AVI')
 
 
-n = 0
-t_tot = 0
-cnt = 0
-# Create a VideoCapture object and read from input file
-# If the input is the camera, pass 0 instead of the video file name
+    n = 0
+    t_tot = 0
+    cnt = 0
+    # Create a VideoCapture object and read from input file
+    # If the input is the camera, pass 0 instead of the video file name
 
-# Check if camera opened successfully
-if (cap.isOpened() == False):
-    print("Error opening video stream or file")
+    # Check if camera opened successfully
+    if (cap.isOpened() == False):
+        print("Error opening video stream or file")
 
-# Read until video is completed
-while(cap.isOpened()):
-    # Capture frame-by-frame
-    tstart = time.time()
+    # Read until video is completed
+    while(cap.isOpened()):
+        # Capture frame-by-frame
+        tstart = time.time()
 
-    ret, frame = cap.read()
-    src = frame
-    if ret == True:
+        ret, frame = cap.read()
+        src = frame
+        if ret == True:
 
-        llx, lly, mlx, mly, rlx, rly = Processing(src)
-        src = DrawLanes(src, llx, lly, mlx, mly, rlx, rly)
+            llx, lly, mlx, mly, rlx, rly = Processing(src)
+            src = DrawLanes(src, llx, lly, mlx, mly, rlx, rly)
 
-        src = CreateGrid(src)
+            src = CreateGrid(src)
 
-        # Display image
-        imshow('frame', src)
+            # Display image
+            imshow('frame', src)
 
-        #imwrite("srcgrid.jpg", src)
+            #imwrite("srcgrid.jpg", src)
 
-        # imshow('otsu', cnny)
-        # compute time duration
-        t_dur = time.time() - tstart
-        t_tot = t_tot + t_dur
-        cnt = cnt + 1
+            # imshow('otsu', cnny)
+            # compute time duration
+            t_dur = time.time() - tstart
+            t_tot = t_tot + t_dur
+            cnt = cnt + 1
 
-        # Press Q on keyboard to  exit
-        ch = cv2.waitKey()
-        if ch & 0xFF == ord('q'):
-            print("frame processing time = ", t_tot / cnt)
+            # Press Q on keyboard to  exit
+            ch = cv2.waitKey()
+            if ch & 0xFF == ord('q'):
+                print("frame processing time = ", t_tot / cnt)
+                break
+            elif ch == ord(' '):
+                imwrite("src" + str(cnt) + ".jpg", src)
+                print("src" + str(cnt) + ".jpg")
+            # Break the loop
+        else:
             break
-        elif ch == ord(' '):
-            imwrite("src" + str(cnt) + ".jpg", src)
-            print("src" + str(cnt) + ".jpg")
-        # Break the loop
-    else:
-        break
 
-# When everything done, release the video capture object
-cap.release()
+    # When everything done, release the video capture object
+    cap.release()
 
-# Closes all the frames
-cv2.destroyAllWindows()
-'''
+    # Closes all the frames
+    cv2.destroyAllWindows()

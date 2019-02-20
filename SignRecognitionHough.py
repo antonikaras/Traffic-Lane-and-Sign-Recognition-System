@@ -1,8 +1,8 @@
 '''
-
+------- S T E P S -------
 ---> Detect red Signs
 ---> Detect blue signs
----> Recognize Signs seperately using ORB or SURF
+---> Recognize Signs seperately using ORB or SURF or SVM
 ---> If a signs exists more than once its deleted
 ---> if opposite signs are detected they are deleted
 
@@ -37,8 +37,6 @@ sgnN = ['tl', 'tr', 'tlr', 'stra', 'gl', 'gr', 'glr', 'bus', 'ped', 'park', 'SP2
 
 #####################################################################
 
-# Converts th image to HSV and deletes the ...
-
 
 def Preprocessing(im):
 
@@ -70,7 +68,6 @@ def Preprocessing(im):
 
     # split the image to its components
     h, s, v = cv.split(hsv)
-    # cv.imwrite("s.jpg", s)
     x, y = h.shape[:2]
 
     ###########################################################################
@@ -225,124 +222,98 @@ def DrawSigns(src, Ds, Dsold):
 
 ####################################################################################################
 
-'''
-#cap = cv.VideoCapture('01200003.AVI')
-#cap = cv.VideoCapture('01300005.AVI')
-#cap = cv.VideoCapture('02050012.AVI')
-#cap = cv.VideoCapture('02100013.AVI')
-cap = cv.VideoCapture('10000022.AVI')
-#cap = cv.VideoCapture('09550021.AVI')
-#cap = cv.VideoCapture('11140025.AVI')
+if (__name__ == 'main'):
 
-fourcc = cv.VideoWriter_fourcc(*'XVID')
-out = cv.VideoWriter('output.avi', fourcc, 20.0, (1280, 720))
+    # Load the video
+    cap = cv.VideoCapture('10000022.AVI')
+
+    fourcc = cv.VideoWriter_fourcc(*'XVID')
+    out = cv.VideoWriter('output.avi', fourcc, 20.0, (1280, 720))
 
 
-# --> Load the parameters used for sign recognition <-- ############||||||||
+    # --> Load the parameters used for sign recognition <-- ############||||||||
 
-des = []
-kpp = []
+    des = []
+    kpp = []
 
-if detector == 0:
-    svm.Load()
-    des.append([])
-    kpp.append([])
-    des.append([])
-    kpp.append([])
-elif detector == 1:
-    des, kpp = orb.Load()
-elif detector == 2:
-    des, kpp = surf.Load()
+    if detector == 0:
+        svm.Load()
+        des.append([])
+        kpp.append([])
+        des.append([])
+        kpp.append([])
+    elif detector == 1:
+        des, kpp = orb.Load()
+    elif detector == 2:
+        des, kpp = surf.Load()
 
-n = 0
-t1_t = 0
-t2_t = 0
-cnt = 0
+    n = 0
+    t1_t = 0
+    t2_t = 0
+    cnt = 0
 
-# Create a VideoCapture object and read from input file
-# If the input is the camera, pass 0 instead of the video file name
+    # Create a VideoCapture object and read from input file
+    # If the input is the camera, pass 0 instead of the video file name
 
-# Check if camera opened successfully
-if (cap.isOpened() == False):
-    print("Error opening video stream or file")
+    # Check if camera opened successfully
+    if (cap.isOpened() == False):
+        print("Error opening video stream or file")
 
-Dsold = []
+    Dsold = []
 
-# Read until video is completed
-while(cap.isOpened()):
+    # Read until video is completed
+    while(cap.isOpened()):
 
-    ret, frame = cap.read()
-    src = frame
-    srcclone = frame.copy()
-    if ret == True:
+        ret, frame = cap.read()
+        src = frame
+        srcclone = frame.copy()
+        if ret == True:
 
-        print(cnt)
+            print(cnt)
 
-        # Capture frame-by-frame
-        ts = time.time()
+            # Capture frame-by-frame
+            ts = time.time()
 
-        # Image preprocessing
-        if cnt > 0:
-            Bim, Rim = Preprocessing(src)
-            t1 = time.time() - ts
+            # Image preprocessing
+            if cnt > 0:
+                Bim, Rim = Preprocessing(src)
+                t1 = time.time() - ts
 
-            Ds = Processing(src, Bim, kpp[0], des[0], 0)
-            tmp = Processing(src, Rim, kpp[1], des[1], 1)
-            Ds.extend(tmp)
-       
+                Ds = Processing(src, Bim, kpp[0], des[0], 0)
+                tmp = Processing(src, Rim, kpp[1], des[1], 1)
+                Ds.extend(tmp)
+           
 
-            src, Dsold = DrawSigns(src, Ds, Dsold)
+                src, Dsold = DrawSigns(src, Ds, Dsold)
 
-            t2 = time.time() - ts
-            # Display image
-            cv.namedWindow("frame", cv.WINDOW_NORMAL)
-            cv.imshow('frame', src)
-        
-        fr1 = [11,12,872,884,887,1012,1023,1030,1042,1655,1663,1669,1839,1842,
-               1859,2293, 2300,2455,2466,2474,2810,2820,2890,2900,2935,2940,2945,
-               2970,2975,3115,3120,3125,4350,4370,4380,4665,4669,5345,5355,5365,
-               5480,5490,5495,5906,5910,5915,6083,6094
-               ]
+                t2 = time.time() - ts
+                # Display image
+                cv.namedWindow("frame", cv.WINDOW_NORMAL)
+                cv.imshow('frame', src)
+            
+           
+            # compute time duration
+            t1_t = t1_t + t1
+            t2_t = t2_t + t2
+            cnt = cnt + 1
 
-        fr2 = [199, 212 ,221,231,252,402,408,510,540,564,875,886,1236,1276,1320,
-               1324,1492,1975,1980,1992,2517,2525,2547,2555,2606,2609,2614,2619,
-               2679,2726,2857,2861,2934,2943,3115,3117,3548,3554,3354,3649,3651,
-               3659,3795,3801,4001,4011,4071,4078]
-        
-        fr3 = [4,8,26,102,160,838,859,1493,1505,1509,1862,1875,1884,2672]
+            # Press Q on keyboard to  exit
 
-        fr4 = [1800,1861,1888,5052,5064,5185,5208,5744,5760,5959,6356,6919,6941,
-               7025,7288,7305,7785]
+            # out.write(src)
 
-        if cnt in fr4:
-            cv.waitKey()
-            #cv.imwrite(str(cnt) + ".jpg", srcclone)
-
-        
-        # compute time duration
-        #t1_t = t1_t + t1
-        #t2_t = t2_t + t2
-        cnt = cnt + 1
-
-        # Press Q on keyboard to  exit
-
-        # out.write(src)
-
-        ch = cv.waitKey()
-        if ch & 0xFF == ord('q'):
-            print("frame processing time = ", t1_t / cnt, t2_t / cnt)
+            ch = cv.waitKey()
+            if ch & 0xFF == ord('q'):
+                print("frame processing time = ", t1_t / cnt, t2_t / cnt)
+                break
+            elif ch == ord(' '):
+                cv.imwrite("o" + str(cnt) + ".jpg", src)
+                print("src" + str(cnt) + ".jpg")
+            # Break the loop
+        else:
             break
-        elif ch == ord(' '):
-            cv.imwrite("o" + str(cnt) + ".jpg", src)
-            print("src" + str(cnt) + ".jpg")
-        # Break the loop
-    else:
-        break
 
-# When everything done, release the video capture object
-cap.release()
+    # When everything done, release the video capture object
+    cap.release()
 
-# Closes all the frames
-cv.destroyAllWindows()
-
-'''
+    # Closes all the frames
+    cv.destroyAllWindows()

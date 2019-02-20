@@ -1,3 +1,7 @@
+'''
+    --> Traffic Lane and Sign Recognition app
+    --> Uses TrafficLaneRecognition and SignRecognition
+'''
 import cv2 as cv
 import os 
 import numpy as np
@@ -13,22 +17,18 @@ detector = 0    #   1 : ORB
                 #   2 : SURF
 ###################################################################################################
 
-useOBD = False
 recVideo = True
 
 ###################################################################################################
 
-#cap = cv.VideoCapture('01200003.AVI')
-#cap = cv.VideoCapture('01300005.AVI')
-#cap = cv.VideoCapture('02050012.AVI')
-#cap = cv.VideoCapture('01500009.AVI')
-#cap = cv.VideoCapture('11190026.AVI')
+# Choose the video or camera 
+cap = cv.VideoCapture('01200003.AVI')
 
 if recVideo:
     fourcc = cv.VideoWriter_fourcc(*'XVID')
-    out = cv.VideoWriter('11190026_proc.avi', fourcc, 30.0, (1280, 720))
+    out = cv.VideoWriter('proc.avi', fourcc, 30.0, (1280, 720))
 
-# --> Load the parameters used for sign recognition <-- ############||||||||
+# --> Load the parameters used for sign recognition <-- #
 
 des = []
 kpp = []
@@ -68,10 +68,13 @@ while(cap.isOpened()):
 
             # Traffic Sign Recognition System
 
-                # Image preprocessing
+            ## Image preprocessing
             Bim, Rim = tsr.Preprocessing(src)
 
+            ### Detect Blue Signs
             Ds = tsr.Processing(src, Bim, kpp[0], des[0], 0)
+            
+            ### Detect Red Signs
             tmp = tsr.Processing(src, Rim, kpp[1], des[1], 1)
             Ds.extend(tmp)
            
@@ -79,7 +82,6 @@ while(cap.isOpened()):
             t1 = time.time() - ts
 
             # Traffic Lane Recognition
-
             llx, lly, mlx, mly, rlx, rly = tlr.Processing(src)
 
             t2 = time.time() - ts
@@ -89,7 +91,7 @@ while(cap.isOpened()):
             # Draw the results
             src, Dsold = tsr.DrawSigns(src, Ds, Dsold)
             src = tlr.DrawLanes(src, llx, lly, mlx, mly, rlx, rly)
-            #src = tlr.CreateGrid(src)
+
             # Display image
             cv.imshow('frame', src)
 
@@ -99,8 +101,6 @@ while(cap.isOpened()):
             # compute time duration
             ts_t = ts_t + t1
             tl_t = tl_t + t2
-
-            #print(t1, t2)
 
             out.write(src)
 

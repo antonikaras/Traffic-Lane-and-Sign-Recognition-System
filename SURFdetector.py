@@ -1,3 +1,6 @@
+'''
+    --> Use SURF detector to match the detected sign to a sign from the database
+'''
 import cv2 as cv
 import numpy as np
 import os

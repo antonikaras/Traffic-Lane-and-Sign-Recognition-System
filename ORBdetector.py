@@ -1,3 +1,6 @@
+'''
+    --> Use ORB detector to match the detected sign to a sign from the database
+'''
 import cv2 as cv
 import numpy as np
 import os
@@ -24,7 +27,6 @@ def ReadData(names):
     nd = os.getcwd() + "/signs/"
     for i in range(0, len(names)):
         im[i] = cv.imread(nd + names[i] + ".jpg")
-        #print(i, names[i], im[i] is None)
 
     return im
 
@@ -56,9 +58,6 @@ def Load():
 ###################################################################################################
 
 def CreateKeys(im, ln):
-
-    #surf = cv.xfeatures2d.SURF_create(hessianThreshold=500,
-    #                                  nOctaves=8, nOctaveLayers=8, extended=True, upright=True)
 
     # Initiate ORB detector
     orb = cv.ORB_create(edgeThreshold=18, patchSize=19, nlevels=6, fastThreshold=10,
@@ -117,13 +116,9 @@ def Comparekeys(d1, k1, d2, k2):
         avg = sum(dist) / len(dist)
         for i in range(0, len(dist)):
             rat = dist[i] / avg
-            #print(rs[i], dist[i])
 
         dmin = np.argmin(dist)
         rat = len(d1) / len(d2[dmin])
-
-        #print("-->", rs[dmin], dist[dmin], rat)
-
 
         # find the index to the smaller distance
         if min(dist) < 55 and rat > 0.4:
@@ -133,22 +128,21 @@ def Comparekeys(d1, k1, d2, k2):
 
 ###################################################################################################
 
-'''
-des, kpp = Load()
+if (__name__ == '__main__'):    
+    des, kpp = Load()
 
-nam = [0, 4, 5, 20, 31, 37, 55]
+    nam = [0, 4, 5, 20, 31, 37, 55]
 
-im = []
+    im = []
 
-for i in range(0, len(nam)):
-    tmp = cv.imread(str(nam[i]) + ".jpg")
-    im.append(tmp)
+    for i in range(0, len(nam)):
+        tmp = cv.imread(str(nam[i]) + ".jpg")
+        im.append(tmp)
 
-tk, td = CreateKeys(im, len(im))
+    tk, td = CreateKeys(im, len(im))
 
-for i in range(0, len(im)):
-    ds = Comparekeys(td[i], tk[i], des[1], kpp[1])
-    if ds > -1:
-        print(i, rs[ds])
-    print("_________________________")
-'''
+    for i in range(0, len(im)):
+        ds = Comparekeys(td[i], tk[i], des[1], kpp[1])
+        if ds > -1:
+            print(i, rs[ds])
+        print("_________________________")

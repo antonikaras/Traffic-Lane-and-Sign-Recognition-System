@@ -29,8 +29,8 @@
 
 ## Dependencies
 	
-	* Python, Tested on Python3
-	* OpenCV3
+	* Python, Tested on Python 3
+	* OpenCV3, Tested on opencv 3.4.2.16
 	* numpy
 	* scipy
 	* scikit-learn

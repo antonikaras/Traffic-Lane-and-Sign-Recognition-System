@@ -316,7 +316,7 @@ def DrawLanes(src, llx, lly, mlx, mly, rlx, rly):
 
 #--------------------------------------------------------------------------------------------------
 
-if (__name__ == 'main'):
+if (__name__ == '__main__'):
 
     #cap = cv2.VideoCapture('19190014.AVI')
     #cap = cv2.VideoCapture('18590010.AVI')

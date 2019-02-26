@@ -222,10 +222,10 @@ def DrawSigns(src, Ds, Dsold):
 
 ####################################################################################################
 
-if (__name__ == 'main'):
+if (__name__ == '__main__'):
 
     # Load the video
-    cap = cv.VideoCapture('10000022.AVI')
+    cap = cv.VideoCapture('01200003.AVI')
 
     fourcc = cv.VideoWriter_fourcc(*'XVID')
     out = cv.VideoWriter('output.avi', fourcc, 20.0, (1280, 720))
@@ -248,8 +248,8 @@ if (__name__ == 'main'):
         des, kpp = surf.Load()
 
     n = 0
-    t1_t = 0
-    t2_t = 0
+    t1_t = t1 = 0
+    t2_t = t2 = 0
     cnt = 0
 
     # Create a VideoCapture object and read from input file

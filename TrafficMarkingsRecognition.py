@@ -7,14 +7,15 @@ import os
 import numpy as np
 import SURFdetector as surf
 import SVMdetector as svm
+import ORBdetector as orb
 import SignRecognitionHough as tsr
 import TrafficLaneRecognition as tlr
 import time
 
 ###################################################################################################
-                #   0 : SVM
-detector = 0    #   1 : ORB
-                #   2 : SURF
+                			#   0 : SVM
+tsr.detector = detector	= 1	#   1 : ORB
+                			#   2 : SURF
 ###################################################################################################
 
 recVideo = True
